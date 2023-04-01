@@ -2,6 +2,8 @@ package com.ufcg.psoft.mercadofacil.repository;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.List;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -60,7 +62,7 @@ class VolatilLoteRepositoryTest {
 		assertEquals(resultado.getProduto(), produtoExtra);
 
 	}
-	
+
 	@Test
 	@DisplayName("Buscar um lote existente pelo id")
 	void buscarLoteExistentePeloID() {
@@ -68,12 +70,12 @@ class VolatilLoteRepositoryTest {
 				.fabricante("Fabricante Extra").preco(125.36).build();
 		Lote lote = Lote.builder().id(1L).numeroDeItens(100).produto(produto).build();
 		driver.save(lote);
-		
+
 		resultado = driver.find(1L);
 		assertNotNull(resultado);
 		assertEquals(lote.getId().longValue(), resultado.getId().longValue());
 	}
-	
+
 	@Test
 	@DisplayName("Buscar um lote não existente pelo id")
 	void buscarLoteNaoExistentePeloID() {
@@ -81,9 +83,68 @@ class VolatilLoteRepositoryTest {
 				.fabricante("Fabricante Extra").preco(125.36).build();
 		Lote lote = Lote.builder().id(1L).numeroDeItens(100).produto(produto).build();
 		driver.save(lote);
-		
+
 		resultado = driver.find(2L);
 		assertNull(resultado);
 	}
 
+	@Test
+	@DisplayName("Buscar todos os lotes")
+	void buscarTodosOsLotes() {
+		Produto produto = Produto.builder().id(1L).nome("Produto Extra").codigoBarra("987654321")
+				.fabricante("Fabricante Extra").preco(125.36).build();
+		Lote lote = Lote.builder().id(1L).numeroDeItens(100).produto(produto).build();
+		Lote lote2 = Lote.builder().id(2L).numeroDeItens(100).produto(produto).build();
+		Lote lote3 = Lote.builder().id(3L).numeroDeItens(100).produto(produto).build();
+		driver.save(lote);
+		driver.save(lote2);
+		driver.save(lote3);
+
+		List<Lote> resultado = driver.findAll();
+		assertEquals(3, resultado.size());
+	}
+
+	@Test
+	@DisplayName("Atualizar lote existente")
+	void atualizarLoteExistente() {
+		Produto produto = Produto.builder().id(1L).nome("Produto Extra").codigoBarra("987654321")
+				.fabricante("Fabricante Extra").preco(125.36).build();
+		Lote lote = Lote.builder().id(1L).numeroDeItens(100).produto(produto).build();
+		driver.save(lote);
+
+		lote.setNumeroDeItens(110);
+
+		resultado = driver.update(lote);
+		assertEquals(110, resultado.getNumeroDeItens());
+	}
+
+	@Test
+	@DisplayName("Atualizar lote não existente")
+	void atualizarLoteNaoExistente() {
+		Produto produto = Produto.builder().id(1L).nome("Produto Extra").codigoBarra("987654321")
+				.fabricante("Fabricante Extra").preco(125.36).build();
+		Lote lote = Lote.builder().id(1L).numeroDeItens(100).produto(produto).build();
+
+		lote.setNumeroDeItens(110);
+
+		resultado = driver.update(lote);
+		assertNull(resultado);
+	}
+
+	@Test
+	@DisplayName("Deletar lote")
+	void deletarLote() {
+		Produto produto = Produto.builder().id(1L).nome("Produto Extra").codigoBarra("987654321")
+				.fabricante("Fabricante Extra").preco(125.36).build();
+		Lote lote = Lote.builder().id(1L).numeroDeItens(100).produto(produto).build();
+		Lote lote2 = Lote.builder().id(2L).numeroDeItens(100).produto(produto).build();
+		Lote lote3 = Lote.builder().id(3L).numeroDeItens(100).produto(produto).build();
+		driver.save(lote);
+		driver.save(lote2);
+		driver.save(lote3);
+
+		driver.delete(lote);
+
+		assertEquals(2, driver.findAll().size());
+	}
 }
